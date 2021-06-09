@@ -1,5 +1,6 @@
 package com.chenjinchi.video.controller;
 
+import com.chenjinchi.video.properties.MinIoProperties;
 import com.chenjinchi.video.storage.MinIoUtil;
 import io.minio.errors.*;
 import org.apache.commons.io.IOUtils;
@@ -11,42 +12,47 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-// import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Controller
 public class VideoUploadController {
 
-    // @Autowired
-    // private HttpServletRequest request;
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private MinIoProperties minIoProperties;
 
     @Autowired
     private MinIoUtil minIoUtil;
 
     @PostMapping("/video")
+    @ResponseBody
     public ResponseEntity<?> handleVideo(@RequestParam("file") MultipartFile file) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        // String path = "test.mp4";
-        // String realPath =request.getServletContext().getRealPath(path);
-        // System.out.println(realPath);
-        // file.transferTo(new File(realPath));
-        // System.out.println(file.getSize());
-        // System.out.println(System.getProperty("user.dir"));
-        // System.out.println(realPath);
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.indexOf('.') == -1) {
+            return ResponseEntity.badRequest().build();
+        }
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        String objectName = UUID.randomUUID()+fileExtension;
 
-        minIoUtil.putObject(file, "1.mp4");
-        return ResponseEntity.ok().build();
+        minIoUtil.putObject(file,minIoProperties.getBucketOriginal(),objectName);
+
+        return ResponseEntity.ok().body(request.getLocalAddr());
     }
 
-    @GetMapping(value = "/video/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(value = "/video/{objectName}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getVideo(@PathVariable Integer id) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        InputStream stream = minIoUtil.getObject("1.mp4");
+    public ResponseEntity<byte[]> getVideo(@RequestParam(name = "resolution", required = false)String resolution,@PathVariable String objectName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(),objectName);
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("Content-Disposition", "attachment; filename=" + id + ".mp4");
+        headers.set("Content-Disposition", "attachment; filename=" + objectName);
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(IOUtils.toByteArray(stream));

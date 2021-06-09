@@ -1,4 +1,4 @@
-package com.chenjinchi.video.storage;
+package com.chenjinchi.video.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,4 +12,8 @@ public class MinIoProperties {
     private String endpoint;
     private String accessKey;
     private String secretKey;
+
+    private String bucket360;
+    private String bucket720;
+    private String bucketOriginal;
 }
