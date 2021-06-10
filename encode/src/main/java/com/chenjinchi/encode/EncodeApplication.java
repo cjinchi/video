@@ -70,6 +70,8 @@ public class EncodeApplication implements CommandLineRunner {
                     }
                 }.start();
             }
+            Thread.sleep(100);
         }
+
     }
 }

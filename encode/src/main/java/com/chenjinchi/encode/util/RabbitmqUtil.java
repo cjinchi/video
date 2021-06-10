@@ -32,13 +32,14 @@ public class RabbitmqUtil {
     @Autowired
     private Channel channel;
 
-    public String getMessage() throws IOException {
+    public String getMessage() throws IOException, InterruptedException {
         while (true) {
             GetResponse response = channel.basicGet("encode", true);
             if (response != null) {
                 byte[] body = response.getBody();
                 return new String(body, StandardCharsets.UTF_8);
             }
+            Thread.sleep(100);
         }
     }
 }
