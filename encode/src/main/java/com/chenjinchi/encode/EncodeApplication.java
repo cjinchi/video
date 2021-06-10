@@ -51,15 +51,15 @@ public class EncodeApplication implements CommandLineRunner {
                     public void run() {
                         System.out.println("Start process " + message);
 
-                        InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
-                        File file720p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_720P);
-                        minIoUtil.putObject(file720p, minIoProperties.getBucket720(), message);
-                        System.out.println(message + " 720p done");
+                        // InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
+                        // File file720p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_720P);
+                        // minIoUtil.putObject(file720p, minIoProperties.getBucket720(), message);
+                        // System.out.println(message + " 720p done");
 
-                        stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
-                        File file360p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_360P);
-                        minIoUtil.putObject(file360p, minIoProperties.getBucket360(), message);
-                        System.out.println(message + " 360p done");
+                        // stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
+                        // File file360p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_360P);
+                        // minIoUtil.putObject(file360p, minIoProperties.getBucket360(), message);
+                        // System.out.println(message + " 360p done");
 
                         currentTaskNum--;
                     }
