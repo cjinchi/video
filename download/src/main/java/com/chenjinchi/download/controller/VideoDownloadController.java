@@ -2,7 +2,9 @@ package com.chenjinchi.download.controller;
 
 import com.chenjinchi.download.properties.MinIoProperties;
 import com.chenjinchi.download.util.MinIoUtil;
+import io.minio.Result;
 import io.minio.errors.*;
+import io.minio.messages.Item;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Controller
 public class VideoDownloadController {
@@ -51,25 +55,29 @@ public class VideoDownloadController {
                 .body(IOUtils.toByteArray(stream));
     }
 
-    // @GetMapping("/play")
-    // @ResponseBody
-    // public void playVideo(HttpServletResponse response) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-    //     response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-    //     response.setHeader("Content-Disposition", "attachment; filename=7a011f3f-547d-43d8-8443-713e20bcf555.mp4");
-    //     InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(),"7a011f3f-547d-43d8-8443-713e20bcf555.mp4");
-    //     IOUtils.copy(stream,response.getOutputStream());
-    //     response.flushBuffer();
-    // }
-
     @GetMapping("/stream/{videoName}")
     public ModelAndView video(@RequestParam(name = "resolution", required = false) String resolution, @PathVariable String videoName, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("index");
+        ModelAndView mav = new ModelAndView("stream");
         mav.addObject("videoName", videoName);
         if (resolution != null) {
             mav.addObject("resolution", resolution);
         } else {
             mav.addObject("resolution", "original");
         }
+        return mav;
+    }
+
+    @GetMapping("/")
+    public ModelAndView home() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        ModelAndView mav = new ModelAndView("index");
+        Collection<String> videoNames = new ArrayList<>();
+        Iterable<Result<Item>> results = minIoUtil.listObjects(minIoProperties.getBucketOriginal());
+        if (results!=null){
+            for(Result<Item> result:results){
+                videoNames.add(result.get().objectName());
+            }
+        }
+        mav.addObject("videoNames",videoNames);
         return mav;
     }
 }

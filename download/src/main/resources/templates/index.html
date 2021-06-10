@@ -1,26 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Video Stream</title>
+    <meta charset="UTF-8">
+    <title>Videos</title>
 </head>
-
-
 <body>
 
-
-
-<video controls="autoplay" width="50%" th:src="@{/video/__${videoName}__(resolution=${resolution})}" ></video>
-
-<div>
-    <a th:href="@{/stream/__${videoName}__(resolution=original)}" >Original</a>
-
-    <a th:href="@{/stream/__${videoName}__(resolution=720p)}" >720p</a>
-
-    <a th:href="@{/stream/__${videoName}__(resolution=360p)}" >360p</a>
-</div>
-
-
+<ul th:each="videoName : ${videoNames}">
+  <li><a th:href="@{/stream/__${videoName}__(resolution=original)}" th:text="${videoName}"></a></li>
+</ul>
 
 </body>
 </html>

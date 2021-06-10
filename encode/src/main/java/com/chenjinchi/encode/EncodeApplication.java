@@ -51,7 +51,6 @@ public class EncodeApplication implements CommandLineRunner {
                     public void run() {
                         System.out.println("Start process " + message);
 
-
                         InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
                         File file720p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_720P);
                         minIoUtil.putObject(file720p, minIoProperties.getBucket720(), message);
