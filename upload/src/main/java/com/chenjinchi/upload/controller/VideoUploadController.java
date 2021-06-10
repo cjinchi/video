@@ -48,7 +48,7 @@ public class VideoUploadController {
 
         minIoUtil.putObject(file, minIoProperties.getBucketOriginal(), objectName);
 
-        rabbitmqUtil.sendMessage(objectName);
+        rabbitmqUtil.sendMessage(System.currentTimeMillis()+" "+objectName);
 
         System.out.println(objectName);
 

@@ -45,21 +45,26 @@ public class EncodeApplication implements CommandLineRunner {
                 currentTaskNum++;
 
                 String message = rabbitmqUtil.getMessage();
+                String[] items = message.split(" ");
+                String objectName = items[1];
+                String sendTime  = items[0];
                 new Thread() {
                     @SneakyThrows
                     @Override
                     public void run() {
-                        System.out.println("Start process " + message);
+                        System.out.println("Start process " + objectName);
 
-                        // InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
-                        // File file720p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_720P);
-                        // minIoUtil.putObject(file720p, minIoProperties.getBucket720(), message);
-                        // System.out.println(message + " 720p done");
+                        InputStream stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), objectName);
+                        File file720p = JaveEncodeUtil.encode(stream, objectName, Resolution.RESOLUTION_720P);
+                        minIoUtil.putObject(file720p, minIoProperties.getBucket720(), objectName);
+                        System.out.println(objectName + " 720p done");
 
-                        // stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), message);
-                        // File file360p = JaveEncodeUtil.encode(stream, message, Resolution.RESOLUTION_360P);
-                        // minIoUtil.putObject(file360p, minIoProperties.getBucket360(), message);
-                        // System.out.println(message + " 360p done");
+                        stream = minIoUtil.getObject(minIoProperties.getBucketOriginal(), objectName);
+                        File file360p = JaveEncodeUtil.encode(stream, objectName, Resolution.RESOLUTION_360P);
+                        minIoUtil.putObject(file360p, minIoProperties.getBucket360(), objectName);
+                        System.out.println(objectName + " 360p done");
+
+                        System.out.println("messageTime "+sendTime+" "+System.currentTimeMillis());
 
                         currentTaskNum--;
                     }
